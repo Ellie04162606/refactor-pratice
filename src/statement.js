@@ -1,20 +1,21 @@
+const COMEDY =  'comedy';
+const TRAGEDY = 'tragedy';
 function statement (invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
   let result = `Statement for ${invoice.customer}\n`;
+
   const format = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 2,
   }).format;
+
   for (let perf of invoice.performances) {
     const play = plays[perf.playID];
     let thisAmount = 0;
-    thisAmount = selectType(play,perf);
-    // add volume credits
-    volumeCredits += Math.max(perf.audience - 30, 0);
-    // add extra credit for every ten comedy attendees
-    if ('comedy' === play.type) volumeCredits += Math.floor(perf.audience / 5);
+    thisAmount = typeAmount(play,perf);
+    volumeCredits += getVolumeCredits(play.type,perf.audience)
     //print line for this order
     result += ` ${play.name}: ${format(thisAmount / 100)} (${perf.audience} seats)\n`;
     totalAmount += thisAmount;
@@ -24,13 +25,19 @@ function statement (invoice, plays) {
   return result;
 }
 
-function selectType(play,perf){
-let amount=0;
- switch (play.type) {
-      case 'tragedy':
+function getVolumeCredits(type,audience){
+   let volumeCredits = Math.max(audience - 30, 0);
+   if (COMEDY === type) volumeCredits += Math.floor(audience / 5);
+   return volumeCredits;
+}
+
+function typeAmount(play,perf){
+  let amount=0;
+  switch (play.type) {
+      case TRAGEDY:
         amount = tragedyAmount(perf.audience);
         break;
-      case 'comedy':
+      case COMEDY:
         amount = comedyAmount(perf.audience);
         break;
       default:
