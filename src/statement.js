@@ -28,22 +28,31 @@ function selectType(play,perf){
 let amount=0;
  switch (play.type) {
       case 'tragedy':
-        amount = 40000;
-        if (perf.audience > 30) {
-          amount += 1000 * (perf.audience - 30);
-        }
+        amount = tragedyAmount(perf.audience);
         break;
       case 'comedy':
-        amount = 30000;
-        amount += 300 * perf.audience;
-        if (perf.audience > 20) {
-          amount += 10000 + 500 * (perf.audience - 20);
-        }
+        amount = comedyAmount(perf.audience);
         break;
       default:
         throw new Error(`unknown type: ${play.type}`);
     }
     return amount;
+}
+
+function tragedyAmount(audience){
+  let amount = 40000;
+  if (audience > 30) {
+    amount += 1000 * (audience - 30);
+    }
+  return amount;
+}
+
+function comedyAmount(audience){
+  let amount = 30000 + 300 * audience;
+  if (audience > 20) {
+      amount += 10000 + 500 * (audience - 20);
+  }
+  return amount;
 }
 
 module.exports = {
